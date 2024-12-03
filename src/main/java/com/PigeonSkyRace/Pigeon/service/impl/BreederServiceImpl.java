@@ -13,8 +13,6 @@ import java.util.logging.Logger;
 @Service
 public class BreederServiceImpl implements BreederService {
 
-    private final Logger logger = Logger.getLogger(BreederServiceImpl.class.getName());
-
     @Autowired
     private BreederRepository breederRepository;
 
@@ -31,7 +29,7 @@ public class BreederServiceImpl implements BreederService {
     }
 
     @Override
-    public User getBreederById(String breederId) {
+    public User getBreederById(int breederId) {
         return breederRepository.findById(breederId)
                 .orElseThrow(() -> new IllegalArgumentException("no breeder found with id: " + breederId));
     }

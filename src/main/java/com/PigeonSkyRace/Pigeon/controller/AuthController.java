@@ -46,7 +46,7 @@ public class AuthController {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (PasswordUtil.hashPassword(authRequest.getPassword()).equals(user.getPassword())) {
-                logger.info("User authenticated successfully: " + user.getEmail());
+                logger.info("User authenticated successfully: " + user.getEmail() + " and " + user.getId() + user.getRole());
 
                 String token = JWT.create()
                         .withSubject(user.getEmail())

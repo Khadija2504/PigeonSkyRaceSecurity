@@ -1,20 +1,18 @@
 package com.PigeonSkyRace.Pigeon.model;
 
+import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import jakarta.validation.constraints.*;
-
 import java.time.LocalDateTime;
 
 @Data
-@Document
+@Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Result {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private int points;
 
@@ -26,13 +24,14 @@ public class Result {
 
     private double flightTime;
 
-    @NotNull(message = "Arrival date cannot be null")
     private LocalDateTime arrivalDate;
 
-    @DocumentReference
+    @ManyToOne
+    @JoinColumn(name = "pigeon_id")
     private Pigeon pigeon;
 
-    @DocumentReference
+    @ManyToOne
+    @JoinColumn(name = "competition_id")
     private Competition competition;
 
     public Result(double speed) {

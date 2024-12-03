@@ -4,7 +4,7 @@ import com.PigeonSkyRace.Pigeon.dto.CompetitionRequest;
 import com.PigeonSkyRace.Pigeon.dto.RaceData;
 import com.PigeonSkyRace.Pigeon.model.Competition;
 import com.PigeonSkyRace.Pigeon.model.Result;
-import com.PigeonSkyRace.Pigeon.model.Saison;
+import com.PigeonSkyRace.Pigeon.model.Season;
 import com.PigeonSkyRace.Pigeon.service.CompetitionService;
 import com.PigeonSkyRace.Pigeon.service.ResultIService;
 import com.PigeonSkyRace.Pigeon.service.SaisonService;
@@ -39,14 +39,17 @@ public class OrganizerController {
         String userId = (String) request.getAttribute("userId");
         String role = (String) request.getAttribute("role");
 
-        if (userId == null || !Objects.equals(role, "organizer")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Missing user id or incorrect role");
+        if (!Objects.equals(role, "organizer")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: incorrect role");
+        }
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Missing user id ");
         }
         return null;
     }
 
     @PostMapping("/addSaison")
-    public ResponseEntity<?> addSaison(HttpServletRequest request, @Valid @RequestBody Saison saison, BindingResult result) {
+    public ResponseEntity<?> addSaison(HttpServletRequest request, @Valid @RequestBody Season saison, BindingResult result) {
         ResponseEntity<String> validationResponse = validateUser(request);
         if (validationResponse != null) {
             return validationResponse;
@@ -59,7 +62,7 @@ public class OrganizerController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        Saison savedSaison = saisonService.addSaison(saison);
+        Season savedSaison = saisonService.addSaison(saison);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSaison);
 
     }
@@ -78,19 +81,19 @@ public class OrganizerController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        Saison saison = saisonService.getSaison(competitionRequest.getSaisonName());
+        Season saison = saisonService.getSaison(competitionRequest.getSaisonName());
         if (saison == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Saison not found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Season not found");
         }
         competitionRequest.getCompetition().setIsOpen(true);
-        competitionRequest.getCompetition().setSaisonId(saison.getId());
+        competitionRequest.getCompetition().setSeason(saison);
 
         Competition savedCompetition = competitionService.addCompetition(competitionRequest.getCompetition());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCompetition);
     }
 
     @PutMapping("/{id}/addPigeonToCompetition")
-    public ResponseEntity<?> updateCompetition(HttpServletRequest request, @PathVariable String id, @RequestParam String badge) {
+    public ResponseEntity<?> updateCompetition(HttpServletRequest request, @PathVariable int id, @RequestParam String badge) {
         ResponseEntity<String> validationResponse = validateUser(request);
         if (validationResponse != null) {
             return validationResponse;
@@ -108,18 +111,18 @@ public class OrganizerController {
         }
     }
 
-    @PostMapping("/{competitionId}/displayAllCompetitionResults")
-    public ResponseEntity<?> displayAllCompetitionResults(HttpServletRequest request, @PathVariable String competitionId) {
+    @GetMapping("/{competitionId}/displayAllCompetitionResults")
+    public ResponseEntity<?> displayAllCompetitionResults(HttpServletRequest request, @PathVariable int competitionId) {
         ResponseEntity<String> validationResponse = validateUser(request);
         if (validationResponse != null) {
             return validationResponse;
         }
         List<Result> results = resultService.getCompetitionResults(competitionId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(results);
+        return ResponseEntity.status(HttpStatus.FOUND).body(results);
     }
 
-    @PostMapping("/{competitionId}/results")
-    public ResponseEntity<?> uploadRaceData(HttpServletRequest request, @RequestParam("file")MultipartFile file, @PathVariable String competitionId) {
+    @PostMapping("/{competitionId}/uploadResults")
+    public ResponseEntity<?> uploadRaceData(HttpServletRequest request, @RequestParam("file")MultipartFile file, @PathVariable int competitionId) {
         ResponseEntity<String> validationResponse = validateUser(request);
         if (validationResponse != null) {
             return validationResponse;
@@ -135,7 +138,7 @@ public class OrganizerController {
     }
 
     @GetMapping("/{competitionId}/closeCompetition")
-    public ResponseEntity<?> closeCompetition(HttpServletRequest request, @PathVariable String competitionId) {
+    public ResponseEntity<?> closeCompetition(HttpServletRequest request, @PathVariable int competitionId) {
         ResponseEntity<String> validationResponse = validateUser(request);
         if (validationResponse != null) {
             return validationResponse;

@@ -2,6 +2,8 @@ package com.PigeonSkyRace.Pigeon.controller;
 
 import com.PigeonSkyRace.Pigeon.model.Pigeon;
 import com.PigeonSkyRace.Pigeon.model.Result;
+import com.PigeonSkyRace.Pigeon.model.User;
+import com.PigeonSkyRace.Pigeon.service.BreederService;
 import com.PigeonSkyRace.Pigeon.service.PigeonService;
 import com.PigeonSkyRace.Pigeon.service.ResultIService;
 import com.PigeonSkyRace.Pigeon.util.ExportResults;
@@ -34,12 +36,18 @@ public class BreederController {
     @Autowired
     private ResultIService resultIService;
 
+    @Autowired
+    private BreederService breederService;
+
     private ResponseEntity<String> validateUser(HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId");
         String role = (String) request.getAttribute("role");
 
-        if (userId == null || !Objects.equals(role, "breeder")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Missing user id or incorrect role");
+        if (!Objects.equals(role, "breeder")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: incorrect role");
+        }
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Missing user id ");
         }
         return null;
     }
@@ -59,8 +67,10 @@ public class BreederController {
         }
 
         try {
-            String userId = (String) request.getAttribute("userId");
-            pigeon.setBreederId(userId);
+            System.out.println("user id from tockan: " + request.getAttribute("userId"));
+                int userId = Integer.parseInt(request.getAttribute("userId").toString());
+            User breeder = breederService.getBreederById(userId);
+            pigeon.setBreeder(breeder);
             Pigeon savedPigeon = pigeonService.addPigeon(pigeon);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedPigeon);
         } catch (DuplicateKeyException e) {
@@ -81,7 +91,7 @@ public class BreederController {
             return validationResponse;
         }
 
-        String userId = (String) request.getAttribute("userId");
+        int userId = Integer.parseInt(request.getAttribute("userId").toString());
         List<Result> results = resultIService.getAllBreederResults(userId);
         return ResponseEntity.status(HttpStatus.OK).body(results);
     }
@@ -101,7 +111,7 @@ public class BreederController {
         String headerValue = "attachment; filename=results_" + currentDateTime + ".pdf";
         response.setHeader(headerKey, headerValue);
 
-        String userId = (String) request.getAttribute("userId");
+        int userId = Integer.parseInt(request.getAttribute("userId").toString());
         List<Result> results = resultIService.getAllBreederResults(userId);
 
         ExportResults exporter = new ExportResults(results);

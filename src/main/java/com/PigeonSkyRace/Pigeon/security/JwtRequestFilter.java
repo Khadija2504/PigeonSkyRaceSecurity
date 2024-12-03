@@ -35,23 +35,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
             try {
-//                Algorithm algorithm = Algorithm.HMAC512(jwtSecret);
-//                var verifier = JWT.require(algorithm).build();
-//                var decodedJWT = verifier.verify(token);
-
                 DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(jwtSecret))
                         .build()
                         .verify(token);
 
-                String userId = decodedJWT.getClaim("userId").asString();
+                Integer userId = decodedJWT.getClaim("userId").asInt();
                 String role = decodedJWT.getClaim("role").asString();
 
                 if (userId != null && role != null) {
-                    request.setAttribute("userId", userId);
+                    request.setAttribute("userId", userId.toString());
                     request.setAttribute("role", role);
 
-                    List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+                    List<SimpleGrantedAuthority> authorities =
+                            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userId.toString(), null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     logger.warning("Missing required claims: userId or role");
@@ -64,6 +62,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 response.getWriter().write("Unauthorized: Token verification failed.");
                 return;
             }
+
         }
         chain.doFilter(request, response);
     }

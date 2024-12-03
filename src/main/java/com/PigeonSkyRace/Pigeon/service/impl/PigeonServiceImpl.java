@@ -1,6 +1,6 @@
 package com.PigeonSkyRace.Pigeon.service.impl;
 
-import com.PigeonSkyRace.Pigeon.model.Competition;
+import com.PigeonSkyRace.Pigeon.service.PigeonService;
 import com.PigeonSkyRace.Pigeon.model.Pigeon;
 import com.PigeonSkyRace.Pigeon.model.Result;
 import com.PigeonSkyRace.Pigeon.repository.PigeonRepository;
@@ -14,7 +14,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
-public class PigeonServiceImpl implements com.PigeonSkyRace.Pigeon.service.PigeonService {
+public class PigeonServiceImpl implements PigeonService {
 
     @Autowired
     private PigeonRepository pigeonRepository;
@@ -43,7 +43,7 @@ public class PigeonServiceImpl implements com.PigeonSkyRace.Pigeon.service.Pigeo
     }
 
     @Override
-    public List<Pigeon> getPigeonsByCompetitionId(String competitionId) {
+    public List<Pigeon> getPigeonsByCompetitionId(int competitionId) {
         List<Result> results = resultRepository.findByCompetitionId(competitionId);
         return results.stream()
                 .map(Result::getPigeon)

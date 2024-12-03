@@ -8,5 +8,5 @@ import java.util.List;
 public interface PigeonService {
     Pigeon addPigeon(Pigeon pigeon);
     List<Pigeon> getAllPigeons();
-    List<Pigeon> getPigeonsByCompetitionId(String competitionId);
+    List<Pigeon> getPigeonsByCompetitionId(int competitionId);
 }
