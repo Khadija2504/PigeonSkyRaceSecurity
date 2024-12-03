@@ -1,10 +1,8 @@
 package com.PigeonSkyRace.Pigeon.repository;
 
-import com.PigeonSkyRace.Pigeon.model.Saison;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import com.PigeonSkyRace.Pigeon.model.Season;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
-public interface SaisonRepository extends MongoRepository<Saison, String> {
-    Saison findSaisonByName(String saisonId);
+public interface SaisonRepository extends JpaRepository<Season, Integer> {
+    Season findSaisonByName(String saisonName);
 }

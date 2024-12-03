@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CompetitionService {
     Competition addCompetition(Competition competition);
-    Optional<Result> updateCompetition(String id, String badge);
-    Competition getCompetitionById(String competitionId);
-    Competition closeCompetition(String competitionId);
+    Optional<Result> updateCompetition(int id, String badge);
+    Competition getCompetitionById(int competitionId);
+    Competition closeCompetition(int competitionId);
 }

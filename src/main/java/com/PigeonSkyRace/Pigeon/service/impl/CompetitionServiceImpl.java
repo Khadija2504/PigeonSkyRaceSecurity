@@ -29,7 +29,7 @@ public class CompetitionServiceImpl implements com.PigeonSkyRace.Pigeon.service.
 
     @Override
 
-    public Optional<Result> updateCompetition(String id, String badge) {
+    public Optional<Result> updateCompetition(int id, String badge) {
         Pigeon pigeons = pigeonRepository.findByBadge(badge).getFirst();
         Optional<Competition> competitionResult = competitionRepository.findById(id);
 
@@ -46,12 +46,12 @@ public class CompetitionServiceImpl implements com.PigeonSkyRace.Pigeon.service.
     }
 
     @Override
-    public Competition getCompetitionById(String competitionId) {
+    public Competition getCompetitionById(int competitionId) {
         return competitionRepository.findById(competitionId).orElseThrow(() -> new IllegalArgumentException("Competition not found"));
     }
 
     @Override
-    public Competition closeCompetition(String competitionId) {
+    public Competition closeCompetition(int competitionId) {
         Competition competition = getCompetitionById(competitionId);
         if(competition.getIsOpen().equals(true)) {
             competition.setIsOpen(false);

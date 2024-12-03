@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -45,9 +42,9 @@ public class ResultServiceImpl implements ResultIService {
     private BreederService breederService;
 
     @Override
-    public List<Result> getAllBreederResults(String breederId) {
-        Set<String> pigeonIds = pigeonService.getAllPigeons().stream()
-                .filter(p -> breederId.equals(p.getBreederId()))
+    public List<Result> getAllBreederResults(int breederId) {
+        Set<Integer> pigeonIds = pigeonService.getAllPigeons().stream()
+                .filter(p -> Objects.equals(breederId, p.getBreeder().getId()))
                 .map(Pigeon::getId)
                 .collect(Collectors.toSet());
         if (pigeonIds.isEmpty()) {
@@ -60,13 +57,15 @@ public class ResultServiceImpl implements ResultIService {
     }
 
     @Override
-    public List<Result> getCompetitionResults(String competitionId) {
-        return resultRepository.findAll().stream().filter(result -> competitionId.contains(result.getCompetition().getId())).collect(Collectors.toList());
+    public List<Result> getCompetitionResults(int competitionId) {
+        return resultRepository.findAll().stream()
+                .filter(result -> result.getCompetition().getId() == competitionId)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public void processRaceData(String competitionId, List<RaceData> raceDataList) {
+    public void processRaceData(int competitionId, List<RaceData> raceDataList) {
         Competition competition = competitionService.getCompetitionById(competitionId);
         if (competition.getIsOpen()) {
             throw new IllegalArgumentException("Competition is not closed yet");
@@ -96,7 +95,7 @@ public class ResultServiceImpl implements ResultIService {
 
             result.setArrivalDate(raceData.getArrivalTime());
 
-            User breeder = breederService.getBreederById(pigeon.getBreederId());
+            User breeder = breederService.getBreederById(pigeon.getBreeder().getId());
             if (breeder == null) {
                 logger.warning("Breeder not found for pigeon with ring number " + pigeon.getBadge());
                 continue;
