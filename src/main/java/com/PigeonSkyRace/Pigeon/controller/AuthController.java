@@ -1,6 +1,8 @@
 package com.PigeonSkyRace.Pigeon.controller;
 
 import com.PigeonSkyRace.Pigeon.dto.AuthRequest;
+import com.PigeonSkyRace.Pigeon.dto.UserDTO;
+import com.PigeonSkyRace.Pigeon.mapper.UserMapper;
 import com.PigeonSkyRace.Pigeon.model.User;
 import com.PigeonSkyRace.Pigeon.service.BreederService;
 import com.PigeonSkyRace.Pigeon.util.PasswordUtil;
@@ -31,9 +33,12 @@ public class AuthController {
 
     @Autowired
     private BreederService breederService;
+    @Autowired
+    private UserMapper userMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User breeder) {
+    public ResponseEntity<User> register(@RequestBody UserDTO breederDTO) {
+        User breeder = userMapper.toEntity(breederDTO);
         breeder.setRole("breeder");
         User createdBreeder = breederService.createBreeder(breeder);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBreeder);

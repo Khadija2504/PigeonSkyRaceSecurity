@@ -1,7 +1,12 @@
 package com.PigeonSkyRace.Pigeon.controller;
 
+import com.PigeonSkyRace.Pigeon.dto.CompetitionDTO;
 import com.PigeonSkyRace.Pigeon.dto.CompetitionRequest;
 import com.PigeonSkyRace.Pigeon.dto.RaceData;
+import com.PigeonSkyRace.Pigeon.dto.SeasonDTO;
+import com.PigeonSkyRace.Pigeon.mapper.CompetitionMapper;
+import com.PigeonSkyRace.Pigeon.mapper.CompetitonRequestMapper;
+import com.PigeonSkyRace.Pigeon.mapper.SeasonMapper;
 import com.PigeonSkyRace.Pigeon.model.Competition;
 import com.PigeonSkyRace.Pigeon.model.Result;
 import com.PigeonSkyRace.Pigeon.model.Season;
@@ -34,6 +39,12 @@ public class OrganizerController {
     private ResultIService resultService;
     @Autowired
     private SaisonService saisonService;
+    @Autowired
+    private CompetitionMapper competitionMapper;
+    @Autowired
+    private SeasonMapper seasonMapper;
+    @Autowired
+    private CompetitonRequestMapper competitonRequestMapper;
 
     private ResponseEntity<String> validateUser(HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId");
@@ -49,7 +60,7 @@ public class OrganizerController {
     }
 
     @PostMapping("/addSaison")
-    public ResponseEntity<?> addSaison(HttpServletRequest request, @Valid @RequestBody Season saison, BindingResult result) {
+    public ResponseEntity<?> addSaison(HttpServletRequest request, @Valid @RequestBody SeasonDTO seasonDTO, BindingResult result) {
         ResponseEntity<String> validationResponse = validateUser(request);
         if (validationResponse != null) {
             return validationResponse;
@@ -61,9 +72,9 @@ public class OrganizerController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errors);
         }
-
-        Season savedSaison = saisonService.addSaison(saison);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedSaison);
+        Season season = seasonMapper.toEntity(seasonDTO);
+        Season savedSeason = saisonService.addSaison(season);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedSeason);
 
     }
 
@@ -73,6 +84,9 @@ public class OrganizerController {
         if (validationResponse != null) {
             return validationResponse;
         }
+
+        CompetitionDTO competitionDTO = competitonRequestMapper.toDTO(competitionRequest.getCompetition());
+        Competition competition = competitionMapper.toEntity(competitionDTO);
 
         if (result.hasErrors()) {
             List<String> errors = result.getFieldErrors().stream()
@@ -85,10 +99,10 @@ public class OrganizerController {
         if (saison == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Season not found");
         }
-        competitionRequest.getCompetition().setIsOpen(true);
-        competitionRequest.getCompetition().setSeason(saison);
+        competition.setIsOpen(true);
+        competition.setSeason(saison);
 
-        Competition savedCompetition = competitionService.addCompetition(competitionRequest.getCompetition());
+        Competition savedCompetition = competitionService.addCompetition(competition);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCompetition);
     }
 
