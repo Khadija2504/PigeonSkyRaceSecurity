@@ -1,5 +1,7 @@
 package com.PigeonSkyRace.Pigeon.controller;
 
+import com.PigeonSkyRace.Pigeon.dto.PigeonDTO;
+import com.PigeonSkyRace.Pigeon.mapper.PigeonMapper;
 import com.PigeonSkyRace.Pigeon.model.Pigeon;
 import com.PigeonSkyRace.Pigeon.model.Result;
 import com.PigeonSkyRace.Pigeon.model.User;
@@ -39,6 +41,9 @@ public class BreederController {
     @Autowired
     private BreederService breederService;
 
+    @Autowired
+    private PigeonMapper pigeonMapper;
+
     private ResponseEntity<String> validateUser(HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId");
         String role = (String) request.getAttribute("role");
@@ -53,7 +58,7 @@ public class BreederController {
     }
 
     @PostMapping("/addPigeon")
-    public ResponseEntity<?> addPigeon(HttpServletRequest request, @Valid @RequestBody Pigeon pigeon, BindingResult result) {
+    public ResponseEntity<?> addPigeon(HttpServletRequest request, @Valid @RequestBody PigeonDTO pigeonDTO, BindingResult result) {
         ResponseEntity<String> validationResponse = validateUser(request);
         if (validationResponse != null) {
             return validationResponse;
@@ -68,7 +73,8 @@ public class BreederController {
 
         try {
             System.out.println("user id from tockan: " + request.getAttribute("userId"));
-                int userId = Integer.parseInt(request.getAttribute("userId").toString());
+            int userId = Integer.parseInt(request.getAttribute("userId").toString());
+            Pigeon pigeon = pigeonMapper.toEntity(pigeonDTO);
             User breeder = breederService.getBreederById(userId);
             pigeon.setBreeder(breeder);
             Pigeon savedPigeon = pigeonService.addPigeon(pigeon);
