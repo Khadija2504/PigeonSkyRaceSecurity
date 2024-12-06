@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -56,7 +55,6 @@ public class AuthController {
                 String token = JWT.create()
                         .withClaim("userId", user.getId())
                         .withClaim("role", user.getRole())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpirationTime))
                         .sign(Algorithm.HMAC512(jwtSecret));
 
                 return ResponseEntity.ok(Map.of("token", token));
