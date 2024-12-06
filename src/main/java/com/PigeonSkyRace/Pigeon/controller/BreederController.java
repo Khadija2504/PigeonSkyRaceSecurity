@@ -5,7 +5,7 @@ import com.PigeonSkyRace.Pigeon.mapper.PigeonMapper;
 import com.PigeonSkyRace.Pigeon.model.Pigeon;
 import com.PigeonSkyRace.Pigeon.model.Result;
 import com.PigeonSkyRace.Pigeon.model.User;
-import com.PigeonSkyRace.Pigeon.service.BreederService;
+import com.PigeonSkyRace.Pigeon.service.UserService;
 import com.PigeonSkyRace.Pigeon.service.PigeonService;
 import com.PigeonSkyRace.Pigeon.service.ResultIService;
 import com.PigeonSkyRace.Pigeon.util.ExportResults;
@@ -25,7 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,30 +38,13 @@ public class BreederController {
     private ResultIService resultIService;
 
     @Autowired
-    private BreederService breederService;
+    private UserService userService;
 
     @Autowired
     private PigeonMapper pigeonMapper;
 
-    private ResponseEntity<String> validateUser(HttpServletRequest request) {
-        String userId = (String) request.getAttribute("userId");
-        String role = (String) request.getAttribute("role");
-
-        if (!Objects.equals(role, "breeder")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: incorrect role");
-        }
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Missing user id ");
-        }
-        return null;
-    }
-
     @PostMapping("/addPigeon")
     public ResponseEntity<?> addPigeon(HttpServletRequest request, @Valid @RequestBody PigeonDTO pigeonDTO, BindingResult result) {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
 
         if (result.hasErrors()) {
             List<String> errors = result.getFieldErrors().stream()
@@ -75,7 +57,7 @@ public class BreederController {
             System.out.println("user id from tockan: " + request.getAttribute("userId"));
             int userId = Integer.parseInt(request.getAttribute("userId").toString());
             Pigeon pigeon = pigeonMapper.toEntity(pigeonDTO);
-            User breeder = breederService.getBreederById(userId);
+            User breeder = userService.getBreederById(userId);
             pigeon.setBreeder(breeder);
             Pigeon savedPigeon = pigeonService.addPigeon(pigeon);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedPigeon);
@@ -92,10 +74,6 @@ public class BreederController {
 
     @GetMapping("/allResults")
     public ResponseEntity<?> getAllResults(HttpServletRequest request) {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
 
         int userId = Integer.parseInt(request.getAttribute("userId").toString());
         List<Result> results = resultIService.getAllBreederResults(userId);
@@ -104,10 +82,6 @@ public class BreederController {
 
     @GetMapping("/exportResults")
     public ResponseEntity<?> exportResults(HttpServletResponse response, HttpServletRequest request) throws DocumentException, IOException {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
 
         response.setContentType("application/pdf");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");

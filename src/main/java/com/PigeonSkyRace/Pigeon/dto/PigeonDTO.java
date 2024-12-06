@@ -27,7 +27,6 @@ public class PigeonDTO {
     @Size(min = 3, max = 30, message = "Color must be between 3 and 30 characters")
     private String color;
 
-    @UniqueElements(message = "The badge should be unique")
     private String badge;
 
     private String breederId;
