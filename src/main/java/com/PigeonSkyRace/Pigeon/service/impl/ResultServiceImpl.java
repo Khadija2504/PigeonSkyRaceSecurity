@@ -6,7 +6,7 @@ import com.PigeonSkyRace.Pigeon.model.Competition;
 import com.PigeonSkyRace.Pigeon.model.Pigeon;
 import com.PigeonSkyRace.Pigeon.model.Result;
 import com.PigeonSkyRace.Pigeon.repository.ResultRepository;
-import com.PigeonSkyRace.Pigeon.service.BreederService;
+import com.PigeonSkyRace.Pigeon.service.UserService;
 import com.PigeonSkyRace.Pigeon.service.CompetitionService;
 import com.PigeonSkyRace.Pigeon.service.PigeonService;
 import com.PigeonSkyRace.Pigeon.service.ResultIService;
@@ -39,7 +39,7 @@ public class ResultServiceImpl implements ResultIService {
     private CompetitionService competitionService;
 
     @Autowired
-    private BreederService breederService;
+    private UserService userService;
 
     @Override
     public List<Result> getAllBreederResults(int breederId) {
@@ -95,7 +95,7 @@ public class ResultServiceImpl implements ResultIService {
 
             result.setArrivalDate(raceData.getArrivalTime());
 
-            User breeder = breederService.getBreederById(pigeon.getBreeder().getId());
+            User breeder = userService.getBreederById(pigeon.getBreeder().getId());
             if (breeder == null) {
                 logger.warning("Breeder not found for pigeon with ring number " + pigeon.getBadge());
                 continue;

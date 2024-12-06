@@ -46,25 +46,8 @@ public class OrganizerController {
     @Autowired
     private CompetitonRequestMapper competitonRequestMapper;
 
-    private ResponseEntity<String> validateUser(HttpServletRequest request) {
-        String userId = (String) request.getAttribute("userId");
-        String role = (String) request.getAttribute("role");
-
-        if (!Objects.equals(role, "organizer")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: incorrect role");
-        }
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Missing user id ");
-        }
-        return null;
-    }
-
     @PostMapping("/addSaison")
     public ResponseEntity<?> addSaison(HttpServletRequest request, @Valid @RequestBody SeasonDTO seasonDTO, BindingResult result) {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
 
         if (result.hasErrors()) {
             List<String> errors = result.getFieldErrors().stream()
@@ -80,10 +63,6 @@ public class OrganizerController {
 
     @PostMapping("/addCompetition")
     public ResponseEntity<?> addCompetition(HttpServletRequest request, @Valid @RequestBody CompetitionRequest competitionRequest, BindingResult result) {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
 
         CompetitionDTO competitionDTO = competitonRequestMapper.toDTO(competitionRequest.getCompetition());
         Competition competition = competitionMapper.toEntity(competitionDTO);
@@ -108,10 +87,6 @@ public class OrganizerController {
 
     @PutMapping("/{id}/addPigeonToCompetition")
     public ResponseEntity<?> updateCompetition(HttpServletRequest request, @PathVariable int id, @RequestParam String badge) {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
 
         if (!StringUtils.hasText(badge)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("pigeon badge is required");
@@ -127,20 +102,12 @@ public class OrganizerController {
 
     @GetMapping("/{competitionId}/displayAllCompetitionResults")
     public ResponseEntity<?> displayAllCompetitionResults(HttpServletRequest request, @PathVariable int competitionId) {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
         List<Result> results = resultService.getCompetitionResults(competitionId);
         return ResponseEntity.status(HttpStatus.FOUND).body(results);
     }
 
     @PostMapping("/{competitionId}/uploadResults")
     public ResponseEntity<?> uploadRaceData(HttpServletRequest request, @RequestParam("file")MultipartFile file, @PathVariable int competitionId) {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
 
         try {
             List<RaceData> raceDataList = CsvParserUtil.parseCsvFile(file);
@@ -153,10 +120,6 @@ public class OrganizerController {
 
     @GetMapping("/{competitionId}/closeCompetition")
     public ResponseEntity<?> closeCompetition(HttpServletRequest request, @PathVariable int competitionId) {
-        ResponseEntity<String> validationResponse = validateUser(request);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
         Competition competition = competitionService.closeCompetition(competitionId);
         if (competition == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Competition not found");

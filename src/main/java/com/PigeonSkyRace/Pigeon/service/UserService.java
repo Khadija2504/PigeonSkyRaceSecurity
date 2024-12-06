@@ -4,7 +4,7 @@ import com.PigeonSkyRace.Pigeon.model.User;
 
 import java.util.Optional;
 
-public interface BreederService {
+public interface UserService {
     User createBreeder(User breeder);
     Optional<User> findByEmail(String email);
     User getBreederById(int breederId);

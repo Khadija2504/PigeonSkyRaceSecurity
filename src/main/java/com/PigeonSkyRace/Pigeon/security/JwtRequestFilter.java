@@ -46,8 +46,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     request.setAttribute("userId", userId.toString());
                     request.setAttribute("role", role);
 
+                    // Ensure role is prefixed with "ROLE_" to work with Spring Security
                     List<SimpleGrantedAuthority> authorities =
                             Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userId.toString(), null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -62,10 +64,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 response.getWriter().write("Unauthorized: Token verification failed.");
                 return;
             }
-
         }
         chain.doFilter(request, response);
     }
+
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
