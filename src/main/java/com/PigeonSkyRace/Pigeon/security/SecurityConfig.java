@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/breeder/addPigeon").hasRole("BREEDER")
                         .requestMatchers("/api/organizer/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated()
