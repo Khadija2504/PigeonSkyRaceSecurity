@@ -32,4 +32,17 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(breederId)
                 .orElseThrow(() -> new IllegalArgumentException("no breeder found with id: " + breederId));
     }
+
+    @Override
+    public User updateUser(String email, String role) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setRole(role);
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("user not found");
+        }
+    }
+
 }
