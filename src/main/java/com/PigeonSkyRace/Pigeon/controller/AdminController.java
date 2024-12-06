@@ -5,18 +5,20 @@ import com.PigeonSkyRace.Pigeon.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
     @Autowired
     private UserService userService;
+
     @PostMapping("/switchRoles")
-    public ResponseEntity<?> updateUserRole(@RequestBody String email, String role) {
+    public ResponseEntity<?> updateUserRole(@RequestParam String email, String role) {
+        System.out.println(email);
+        String currentUserRole = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        System.out.println("Current User Role: " + currentUserRole);
         try {
             User updatedUser = userService.updateUser(email, role);
             return ResponseEntity.status(HttpStatus.CREATED).body(updatedUser);
