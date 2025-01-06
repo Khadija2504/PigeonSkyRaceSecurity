@@ -20,3 +20,11 @@ jwt:
   secret: f6fbccba3855c01297f5c39e8bd5ef9c4ad57a44c9d3d26032162f59daec4a8c
   expiration:
     time: 3600000
+server:
+  port: 8900
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: youssef2016
+    key-store-type: PKCS12
+    key-alias: pigeonSkyRice
