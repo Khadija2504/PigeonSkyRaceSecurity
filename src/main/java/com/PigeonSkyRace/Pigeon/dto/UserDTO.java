@@ -16,11 +16,15 @@ public class UserDTO {
     @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
     private String name;
 
-    @Null
+    @NotNull
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    private String username;
+
+    @NotNull
     @Pattern(regexp = "^-?\\d{1,2}\\.\\d+$", message = "Invalid latitude format")
     private String latitude;
 
-    @Null
+    @NotNull
     @Pattern(regexp = "^-?\\d{1,3}\\.\\d+$", message = "Invalid longitude format")
     private String longitude;
 

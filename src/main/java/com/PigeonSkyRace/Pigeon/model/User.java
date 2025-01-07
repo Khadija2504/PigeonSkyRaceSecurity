@@ -24,10 +24,8 @@ public class User {
     private String name;
     private String username;
 
-    @Null
     private String latitude;
 
-    @Null
     private String longitude;
 
     private String password;
