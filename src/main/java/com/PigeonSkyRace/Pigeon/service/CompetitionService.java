@@ -3,6 +3,7 @@ package com.PigeonSkyRace.Pigeon.service;
 import com.PigeonSkyRace.Pigeon.model.Competition;
 import com.PigeonSkyRace.Pigeon.model.Result;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CompetitionService {
@@ -10,4 +11,5 @@ public interface CompetitionService {
     Optional<Result> updateCompetition(int id, String badge);
     Competition getCompetitionById(int competitionId);
     Competition closeCompetition(int competitionId);
+    List<Competition> getAllCompetitions();
 }
