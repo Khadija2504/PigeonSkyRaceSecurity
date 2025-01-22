@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 @RestController
@@ -106,6 +105,18 @@ public class OrganizerController {
         return ResponseEntity.status(HttpStatus.FOUND).body(results);
     }
 
+    @GetMapping("/getAllSeasons")
+    public ResponseEntity<?> getAllSeasons() {
+        List<Season> seasons = saisonService.getAllSeasons();
+        return ResponseEntity.ok(seasons);
+    }
+
+    @GetMapping("/getAllCompetitions")
+    public ResponseEntity<?> getAllCompetitions() {
+        List<Competition> competitions = competitionService.getAllCompetitions();
+        return ResponseEntity.ok(competitions);
+    }
+
     @PostMapping("/{competitionId}/uploadResults")
     public ResponseEntity<?> uploadRaceData(HttpServletRequest request, @RequestParam("file")MultipartFile file, @PathVariable int competitionId) {
 
@@ -117,6 +128,7 @@ public class OrganizerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
 
     @GetMapping("/{competitionId}/closeCompetition")
     public ResponseEntity<?> closeCompetition(HttpServletRequest request, @PathVariable int competitionId) {

@@ -59,4 +59,9 @@ public class CompetitionServiceImpl implements com.PigeonSkyRace.Pigeon.service.
         }
         return null;
     }
+
+    @Override
+    public List<Competition> getAllCompetitions() {
+        return competitionRepository.findAll();
+    }
 }
